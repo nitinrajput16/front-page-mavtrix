@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        background: url('sky.jpg');
+        /* background-color: black; */
+        height: 100vh;
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 105% 105%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nav {
+        position: relative;
+        display: flex;
+        color: white;
+        width: 100%;
+        /* box-shadow: 0px 3px white; */
+        padding: 15px;
+        box-sizing: border-box;
+        max-height: 8vh;
+        align-items: center;
+    }
+
+    .nav>.item {
+        list-style-type: none;
+        transition: all .2s linear;
+        height: 25px;
+        background: linear-gradient(to top, #fff 2px, transparent 1px);
+        background-size: 0 100%;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        margin: 0;
+        margin-left: 25px;
+        font-weight: 600;
+
+    }
+
+    .nav>.item:hover {
+        background-size: 100% 100%;
+    }
+
+    .full {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #canvas {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        z-index:-1; 
+    }
+    .secfull{
+        flex:1;
+        overflow:auto;
+    }
+    .beechwala{
+        width:100%;
+        height:100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .beechwala > div{
+        color: #888;
+        font-size: xx-large;
+        text-align: center;
+    }
+    .heading{
+        height:2.3em;
+        color:white
+    }
+    #fixed{
+        position:fixed;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 2px solid #fff2;
+        z-index: -1;
+        transition: background 0.2s linear;
+    }
+    #fixed.sphovered{
+        background: #119;
+        border: 1px solid transparent;
+    }
+    #image{
+        height:100%
+    }
+</style>
+
+<body>
+    <div id="fixed">
+    </div>
+    <div class="full">
+        <canvas id="canvas"></canvas>
+        <div class="nav">
+            <img id="image" src="logo.svg" alt="">
+            <div style="flex:1"></div>
+            <div class="item sphover">Home</div>
+            <div class="item sphover">Settings</div>
+            <div class="item sphover">Register</div>
+        </div>
+        <div class="secfull">
+            <div class="beechwala">
+                <div style="position: sticky; top:0;">
+                    <div>Welcome To</div>
+                    <img src="logo.svg" class="heading sphover">
+                </div>
+            </div>
+            <div class="beechwala" style="background:#000">
+                <div>
+                    Imagining new things
+                </div>
+            </div>
+            
+            <div class="beechwala">
+                <div>
+                    Your things reimagined
+                </div>
+            </div>
+            
+            <div class="beechwala" style="background:#000">
+                <div>
+                    Imagining new things
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var cursorVariables = {
+            x:0,
+            y:0
+        }
+        document.addEventListener("mousemove", function (e) {
+            var w = window.innerWidth
+            var h = window.innerHeight
+            var x = cursorVariables.x = e.clientX
+            var y = cursorVariables.y = e.clientY
+            var posx = (x / w) * 100
+            var posy = (y / h) * 100
+            var fixed =document.getElementById("fixed");
+            fixed.style.left=(x-75)+"px"
+            fixed.style.top=(y-75)+"px"
+            document.body.style.backgroundPosition = posx + "% " + posy + "%";
+            
+            if(e.target.classList.contains("sphover")){
+                fixed.classList.add("sphovered")
+                var r = Math.random() * 255;
+                var g = Math.random() * 255;
+                var b = Math.random() * 255;
+                // fixed.style.background = `rgb(${r}, ${g}, ${b})`;
+                document.body.style.cursor ="none"
+            }
+            else{
+                fixed.classList.remove("sphovered")
+                document.body.style.cursor ="unset"
+            }
+        })
+        var canvas = document.getElementById("canvas")
+            var r = canvas.getBoundingClientRect();
+            canvas.width = r.width
+            canvas.height = r.height
+        var ctx = canvas.getContext("2d");
+        let fc  = 0;
+        var particles = [];
+        function init() {
+            for (var i = 0; i < 50; i++) {
+
+                particles.push({
+                    intensity: Math.random() * 0.5,
+                    position: {
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height
+                    },
+                    velocity: {
+                        x: Math.random() * 2 - 1,
+                        y: Math.random() * 2 - 1
+                    },
+                    color:{
+                        r:Math.random()*255,
+                        g:Math.random()*255,
+                        b:Math.random()*255
+                    },
+                    force:{
+                        x:0,
+                        y:0
+                    }
+                })
+            }
+            // for (var i = 0; i < 30; i++) {
+
+            //     particles.push({
+            //         intensity: Math.random() * 0.5,
+            //         position: {
+            //             x: Math.random() * canvas.width,
+            //             y: Math.random() * canvas.height
+            //         },
+            //         velocity: {
+            //             x: 0,
+            //             y: 0
+            //         },
+            //         color:{
+            //             r:Math.random()*255,
+            //             g:Math.random()*255,
+            //             b:Math.random()*255
+            //         },
+            //         force:{
+            //             x:0,
+            //             y:0
+            //         }
+            //     })
+            // }
+            window.requestAnimationFrame(update);
+        }
+        function distance(x1, y1, x2, y2) {
+            return Math.sqrt((x1-x2)**2 +  (y1-y2)**2);
+        }
+        function update() {
+            for (let i = 0; i < particles.length; i++) {
+                let particle = particles[i]
+                if(particle.force.x || particle.force.y) {
+                    particle.position.x += particle.force.x;
+                    particle.position.y += particle.force.y;
+                } else{
+                    particle.position.x += particle.velocity.x * 0.5
+                    particle.position.y += particle.velocity.y * 0.5
+                }
+                if (particle.position.x >= canvas.width && particle.velocity.x > 0) {
+                    particle.velocity.x = -particle.velocity.x;
+                }
+                if (particle.position.x <= 0 && particle.velocity.x < 0) {
+                    particle.velocity.x = -particle.velocity.x;
+                }
+
+                if (particle.position.y >= canvas.height && particle.velocity.y > 0) {
+                    particle.velocity.y= -particle.velocity.y;
+                }
+                if (particle.position.y <= 0 && particle.velocity.y < 0) {
+                    particle.velocity.y = -particle.velocity.y;
+                }
+
+                if(distance(cursorVariables.x, cursorVariables.y, particle.position.x, particle.position.y) <= 75){
+                    particle.force.x = ((particle.position.x - cursorVariables.x))*0.05;
+                    particle.force.y = ((particle.position.y - cursorVariables.y))*0.05;
+                } else {
+                    particle.force.x = 0;
+                    particle.force.y = 0;
+                }
+            }
+            render()
+        }
+        function render() {
+            if(fc % 1 == 0 ){
+                ctx.fillStyle = "transparent"
+                
+            }
+            ++fc;
+            var r = canvas.getBoundingClientRect();
+            canvas.width = r.width
+            canvas.height = r.height
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                let particle = particles[i];
+                let posx = particle.position.x;
+                let posy = particle.position.y;
+                let intensity = particle.intensity*(0.2+Math.abs(Math.sin(i + fc/40)));
+                const gradient = ctx.createRadialGradient(posx, posy, 10 * intensity, posx, posy, intensity * 200);
+
+                const {r, g, b} = particle.color;
+                gradient.addColorStop(0, `rgb(${r},${g},${b}`);
+                gradient.addColorStop(0.01, "#fff1");
+                gradient.addColorStop(0.2, "#aaa1");
+                gradient.addColorStop(1, "transparent");
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(posx - 200 * intensity, posy - 200 * intensity, 400 * intensity, 400 * intensity);
+            }
+            // if(window.sphovered){
+            //     ctx.fillStyle= "white"
+            // }
+            // else{
+            //     ctx.fillStyle = "transparent"
+            // }
+            // ctx.beginPath();
+            // ctx.strokeStyle="white";
+            // ctx.arc(cursorVariables.x, cursorVariables.y, 50, 0, 2*Math.PI);
+            // ctx.stroke();
+            // ctx.fill()
+            window.requestAnimationFrame(update)
+        }
+        init();
+    </script>
+</body>
+
+</html>
